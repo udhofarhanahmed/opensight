@@ -17,6 +17,16 @@ def generate_pdf_report(output_path: str, client_name: str = "OpenSight Demo"):
         kpis = kpi_service.get_summary_metrics()
         insights = insight_gen.generate_insights()
         
+        # Get forecast data
+        forecast_df = kpi_service.get_revenue_forecast(forecast_days=30)
+        forecast_data = {}
+        if not forecast_df.empty:
+            forecast_data = {
+                'forecast': True,
+                'forecast_total': forecast_df['revenue'].sum(),
+                'forecast_7d': forecast_df.head(7)['revenue'].sum()
+            }
+        
         # Setup Jinja2
         template_dir = os.path.join(os.path.dirname(__file__), 'templates')
         env = Environment(loader=FileSystemLoader(template_dir))
@@ -27,7 +37,8 @@ def generate_pdf_report(output_path: str, client_name: str = "OpenSight Demo"):
             client=client_name,
             logo="https://via.placeholder.com/150x50?text=OpenSight",
             kpis=kpis,
-            insights=insights
+            insights=insights,
+            **forecast_data
         )
         
         # Generate PDF

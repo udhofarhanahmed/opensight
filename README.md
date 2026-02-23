@@ -8,6 +8,14 @@ OpenSight is a modular sales analytics platform designed for SMEs. It ingests ra
 - Docker & Docker Compose
 - Python 3.11+
 
+## ✨ Enhanced Features (Level Up)
+- **Advanced Ingestion:** Support for both CSV and Excel (.xlsx, .xls) files.
+- **Live Exchange Rates:** Real-time currency normalization using live API data.
+- **Data Quality:** Automated validation layer to catch missing or malformed data.
+- **Fuzzy Deduplication:** Smart customer matching to handle near-duplicate entries.
+- **Revenue Forecasting:** 30-day projections using Exponential Smoothing (Statsmodels).
+- **Interactive Dashboard:** Date range filters and unified historical/forecast charts.
+
 ### Run with Docker
 ```bash
 docker-compose -f infra/docker-compose.yml up --build

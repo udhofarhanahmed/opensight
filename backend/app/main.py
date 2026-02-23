@@ -22,9 +22,15 @@ def get_kpi_summary(db: Session = Depends(get_db)):
     return kpi_service.get_summary_metrics()
 
 @app.get("/api/kpis/daily")
-def get_daily_revenue(db: Session = Depends(get_db)):
+def get_daily_revenue(db: Session = Depends(get_db), days: int = 30):
     kpi_service = KPIService(db)
-    df = kpi_service.get_daily_revenue()
+    df = kpi_service.get_daily_revenue(days=days)
+    return df.to_dict(orient='records')
+
+@app.get("/api/kpis/forecast")
+def get_revenue_forecast(db: Session = Depends(get_db), days: int = 30):
+    kpi_service = KPIService(db)
+    df = kpi_service.get_revenue_forecast(forecast_days=days)
     return df.to_dict(orient='records')
 
 @app.get("/api/insights")
