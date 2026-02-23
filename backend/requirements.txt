@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+sqlalchemy
+pandas
+pydantic-settings
+prefect
+weasyprint
+jinja2
+python-multipart
+requests
+pytest
+pytest-cov
