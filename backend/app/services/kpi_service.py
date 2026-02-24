@@ -43,18 +43,45 @@ class KPIService:
         
         return pd.DataFrame(results, columns=['channel', 'conversions', 'revenue'])
 
-    def get_summary_metrics(self):
+    def get_summary_metrics(self, days: int = 30):
         """
-        Get high-level summary metrics.
+        Get high-level summary metrics with period comparison.
         """
-        total_revenue = self.db.query(func.sum(SalesEvent.net_amount)).filter(SalesEvent.status == 'completed').scalar() or 0.0
-        total_orders = self.db.query(func.count(SalesEvent.id)).filter(SalesEvent.status == 'completed').scalar() or 0
-        avg_order_value = total_revenue / total_orders if total_orders > 0 else 0.0
+        # Current period
+        start_date = datetime.utcnow() - timedelta(days=days)
         
+        # Previous period for comparison
+        prev_start_date = start_date - timedelta(days=days)
+        
+        def get_metrics(start, end):
+            query = self.db.query(
+                func.sum(SalesEvent.net_amount).label('revenue'),
+                func.count(SalesEvent.id).label('orders')
+            ).filter(
+                SalesEvent.timestamp_utc >= start,
+                SalesEvent.timestamp_utc < end,
+                SalesEvent.status == 'completed'
+            ).first()
+            
+            revenue = query.revenue or 0.0
+            orders = query.orders or 0
+            aov = revenue / orders if orders > 0 else 0.0
+            return revenue, orders, aov
+
+        curr_rev, curr_ord, curr_aov = get_metrics(start_date, datetime.utcnow())
+        prev_rev, prev_ord, prev_aov = get_metrics(prev_start_date, start_date)
+        
+        def calc_change(curr, prev):
+            if prev == 0: return 0.0
+            return ((curr - prev) / prev) * 100
+
         return {
-            "total_revenue": total_revenue,
-            "total_orders": total_orders,
-            "avg_order_value": avg_order_value
+            "total_revenue": curr_rev,
+            "total_orders": curr_ord,
+            "avg_order_value": curr_aov,
+            "revenue_change": calc_change(curr_rev, prev_rev),
+            "orders_change": calc_change(curr_ord, prev_ord),
+            "aov_change": calc_change(curr_aov, prev_aov)
         }
 
     def get_revenue_forecast(self, forecast_days: int = 30):

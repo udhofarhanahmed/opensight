@@ -22,6 +22,16 @@ docker-compose -f infra/docker-compose.yml up --build
 ```
 The dashboard will be available at `http://localhost:8501` and the API at `http://localhost:8000`.
 
+## 🌐 How to Use as a Web App
+OpenSight is designed to be used as a web application. You can access it in two ways:
+
+1. **Local Access (Owner):** Run the system locally and access it at `http://localhost:8501`.
+2. **Cloud Access (Others):** Deploy the system to a cloud provider like **Render** or **Fly.io** to get a public URL that others can use.
+
+For detailed instructions, see:
+- [How to Use Guide](docs/how_to_use.md)
+- [Cloud Deployment Guide](docs/deploy_free.md)
+
 ### Local Development
 1. Install backend dependencies:
    ```bash
